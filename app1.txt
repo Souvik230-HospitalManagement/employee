@@ -1,0 +1,370 @@
+const express = require('express');
+const path = require('path');
+const mysql = require('mysql');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Set Handlebars as the view engine
+app.set('view engine', 'hbs');
+
+// Serve static files from node_modules
+app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
+app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
+app.use('/icons', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')));
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Use body-parser middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Configure session middleware
+app.use(session({
+  secret: 'your_secret_key', // Replace with a strong secret key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
+
+// MySQL Database Connection
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root', // default MySQL username in XAMPP
+  password: '', // default MySQL password in XAMPP is empty
+  database: 'employee', // name of the database you created
+});
+
+// Connect to MySQL
+db.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  console.log('Connected to MySQL database');
+
+  // Ensure the emp_ratting table has the username column
+  const addUsernameColumnQuery = `
+    ALTER TABLE emp_ratting 
+    ADD COLUMN IF NOT EXISTS username VARCHAR(255);
+  `;
+  db.query(addUsernameColumnQuery, (err, result) => {
+    if (err) {
+      console.error('Error adding username column to emp_ratting table:', err);
+    } else {
+      console.log('Username column ensured in emp_ratting table');
+    }
+  });
+});
+
+// Route to serve the registration page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
+app.post('/register', (req, res) => {
+  const { name, email, designation, username, password } = req.body;
+  const INSERT_USER_QUERY = 'INSERT INTO register (name, email, designation, username, password) VALUES (?, ?, ?, ?, ?)';
+
+  db.query(INSERT_USER_QUERY, [name, email, designation, username, password], (err, result) => {
+    if (err) {
+      console.error('Error inserting user:', err);
+      res.status(500).send('Error registering user');
+      return;
+    }
+    console.log('User registered successfully');
+    res.redirect('/login'); // Redirect to login page after successful registration
+  });
+});
+
+// Route to serve the login page
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const SELECT_USER_QUERY = 'SELECT * FROM register WHERE username = ? AND password = ?';
+
+  db.query(SELECT_USER_QUERY, [username, password], (err, results) => {
+    if (err) {
+      console.error('Error querying user:', err);
+      res.status(500).send('Error logging in');
+      return;
+    }
+
+    if (results.length > 0) {
+      const userDesignation = results[0].designation; // Assuming 'designation' is the column name in your database
+      console.log(`Login successful. User Designation: ${userDesignation}`);
+
+      // Store the logged-in username in session
+      req.session.username = username;
+
+      if (userDesignation === 'Employee') {
+        res.redirect('/emp-details'); // Redirect to employee details page after successful login
+      } else if (userDesignation === 'Team Leader') {
+        res.redirect('/team-leader-details'); // Redirect to team leader welcome page
+      } else {
+        res.status(403).send('Unauthorized access');
+      }
+    } else {
+      console.log('Invalid username or password');
+      res.status(401).send('Invalid username or password');
+    }
+  });
+});
+
+// Route to serve the employee details page
+app.get('/emp-details', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'emp-details.html'));
+});
+
+// Handle form submission for employee details
+app.post('/emp-details', (req, res) => {
+  const { employeeCode, phoneNumber, userRoleId, managerId, designation, deptId } = req.body;
+  const INSERT_EMPLOYEE_QUERY = 'INSERT INTO emp_details (employee_code, phone_number, user_role_id, manager_id, deperment, dept_id) VALUES (?, ?, ?, ?, ?, ?)';
+
+  db.query(INSERT_EMPLOYEE_QUERY, [employeeCode, phoneNumber, userRoleId, managerId, designation, deptId], (err, result) => {
+    if (err) {
+      console.error('Error inserting employee details:', err);
+      res.status(500).send('Error submitting employee details');
+      return;
+    }
+    console.log('Employee details submitted successfully');
+    res.redirect('/emp-self-ratting'); // Redirect to self-rating page after successful submission
+  });
+});
+
+// Route to serve the self-rating page
+app.get('/emp-self-ratting', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'emp-self-ratting.html'));
+});
+
+// Handle form submission for self-rating
+app.post('/submit-rating', (req, res) => {
+  const { rating1, rating2, rating3, rating4, rating5 } = req.body;
+  const username = req.session.username; // Get the logged-in username from session
+
+  const query = 'INSERT INTO emp_ratting (username, question1, question2, question3, question4, question5) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(query, [username, rating1, rating2, rating3, rating4, rating5], (err, result) => {
+    if (err) {
+      console.error('Error inserting data: ', err);
+      res.status(500).send('An error occurred while submitting your rating.');
+    } else {
+      res.send('Rating submitted successfully!');
+    }
+  });
+});
+
+app.get('/team-leader-details', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'team-leader-details.html'));
+});
+
+app.post('/team-leader-details', (req, res) => {
+  const { teamLeaderCode, phoneNumber, userRoleId, deptId, designation } = req.body;
+
+  const query = 'INSERT INTO team_leader_details (team_leader_code, phone_number, user_role_id, dept_id, designation) VALUES (?, ?, ?, ?, ?)';
+  db.query(query, [teamLeaderCode, phoneNumber, userRoleId, deptId, designation], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.send('Error saving team leader details');
+    } else {
+      res.send('Team leader details saved successfully');
+    }
+  });
+});
+
+// Route to serve the team leader welcome page
+app.get('/team-leader-ratting', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'team-leader-ratting.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+// const express = require('express');
+// const path = require('path');
+// const mysql = require('mysql');
+// const bodyParser = require('body-parser');
+// const session = require('express-session');
+// const app = express();
+// const PORT = process.env.PORT || 3000;
+
+// // Set Handlebars as the view engine
+// app.set('view engine', 'hbs');
+
+// // Serve static files from node_modules
+// app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
+// app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
+// app.use('/icons', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')));
+
+// // Serve static files from the "public" directory
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// // Use body-parser middleware
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+
+// // Configure session middleware
+// app.use(session({
+//   secret: 'your_secret_key', // Replace with a strong secret key
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: false } // Set to true if using HTTPS
+// }));
+
+// // MySQL Database Connection
+// const db = mysql.createConnection({
+//   host: 'localhost',
+//   user: 'root', // default MySQL username in XAMPP
+//   password: '', // default MySQL password in XAMPP is empty
+//   database: 'employee', // name of the database you created
+// });
+
+// // Connect to MySQL
+// db.connect((err) => {
+//   if (err) {
+//     throw err;
+//   }
+//   console.log('Connected to MySQL database');
+// });
+
+// // Route to serve the registration page
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'register.html'));
+// });
+
+// app.post('/register', (req, res) => {
+//   const { name, email, designation, username, password } = req.body;
+//   const INSERT_USER_QUERY = 'INSERT INTO register (name, email, designation, username, password) VALUES (?, ?, ?, ?, ?)';
+
+//   db.query(INSERT_USER_QUERY, [name, email, designation, username, password], (err, result) => {
+//     if (err) {
+//       console.error('Error inserting user:', err);
+//       res.status(500).send('Error registering user');
+//       return;
+//     }
+//     console.log('User registered successfully');
+//     res.redirect('/login'); // Redirect to login page after successful registration
+//   });
+// });
+
+// // Route to serve the login page
+// app.get('/login', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'login.html'));
+// });
+
+// app.post('/login', (req, res) => {
+//   const { username, password } = req.body;
+//   const SELECT_USER_QUERY = 'SELECT * FROM register WHERE username = ? AND password = ?';
+
+//   db.query(SELECT_USER_QUERY, [username, password], (err, results) => {
+//     if (err) {
+//       console.error('Error querying user:', err);
+//       res.status(500).send('Error logging in');
+//       return;
+//     }
+
+//     if (results.length > 0) {
+//       const userDesignation = results[0].designation; // Assuming 'designation' is the column name in your database
+//       console.log(`Login successful. User Designation: ${userDesignation}`);
+
+//       // Store the logged-in username in session
+//       req.session.username = username;
+
+//       if (userDesignation === 'Employee') {
+//         res.redirect('/emp-details'); // Redirect to employee details page after successful login
+//       } else if (userDesignation === 'Team Leader') {
+//         res.redirect('/team-leader-details'); // Redirect to team leader welcome page
+//       } else {
+//         res.status(403).send('Unauthorized access');
+//       }
+//     } else {
+//       console.log('Invalid username or password');
+//       res.status(401).send('Invalid username or password');
+//     }
+//   });
+// });
+
+// // Route to serve the employee details page
+// app.get('/emp-details', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'emp-details.html'));
+// });
+
+// // Handle form submission for employee details
+// app.post('/emp-details', (req, res) => {
+//   const { employeeCode, phoneNumber, userRoleId, managerId, designation, deptId } = req.body;
+//   const INSERT_EMPLOYEE_QUERY = 'INSERT INTO emp_details (employee_code, phone_number, user_role_id, manager_id, deperment, dept_id) VALUES (?, ?, ?, ?, ?, ?)';
+
+//   db.query(INSERT_EMPLOYEE_QUERY, [employeeCode, phoneNumber, userRoleId, managerId, designation, deptId], (err, result) => {
+//     if (err) {
+//       console.error('Error inserting employee details:', err);
+//       res.status(500).send('Error submitting employee details');
+//       return;
+//     }
+//     console.log('Employee details submitted successfully');
+//     res.redirect('/emp-self-ratting'); // Redirect to self-rating page after successful submission
+//   });
+// });
+
+// // Route to serve the self-rating page
+// app.get('/emp-self-ratting', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'emp-self-ratting.html'));
+// });
+
+// // Handle form submission for self-rating
+// app.post('/submit-rating', (req, res) => {
+//   const { rating1, rating2, rating3, rating4, rating5 } = req.body;
+//   const username = req.session.username; // Get the logged-in username from session
+
+//   const query = 'INSERT INTO emp_ratting (username, question1, question2, question3, question4, question5) VALUES (?, ?, ?, ?, ?, ?)';
+//   db.query(query, [username, rating1, rating2, rating3, rating4, rating5], (err, result) => {
+//     if (err) {
+//       console.error('Error inserting data: ', err);
+//       res.status(500).send('An error occurred while submitting your rating.');
+//     } else {
+//       res.send('Rating submitted successfully!');
+//     }
+//   });
+// });
+
+// app.get('/team-leader-details', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'team-leader-details.html'));
+// });
+
+// app.post('/team-leader-details', (req, res) => {
+//   const { teamLeaderCode, phoneNumber, userRoleId, deptId, designation } = req.body;
+
+//   const query = 'INSERT INTO team_leader_details (team_leader_code, phone_number, user_role_id, dept_id, designation) VALUES (?, ?, ?, ?, ?)';
+//   db.query(query, [teamLeaderCode, phoneNumber, userRoleId, deptId, designation], (err, result) => {
+//     if (err) {
+//       console.error(err);
+//       res.send('Error saving team leader details');
+//     } else {
+//       res.send('Team leader details saved successfully');
+//     }
+//   });
+// });
+
+// // Route to serve the team leader welcome page
+// app.get('/team-leader-ratting', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views', 'team-leader-ratting.html'));
+// });
+
+// // Start the server
+// app.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });

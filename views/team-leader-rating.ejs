@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Team Leader Rating - NiceAdmin</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Other necessary CSS files -->
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <div class="container">
+      <section class="section min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex justify-content-center py-4">
+                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                  <img src="assets/img/logo.png" alt="">
+                  <span class="d-none d-lg-block">NiceAdmin</span>
+                </a>
+              </div>
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Team Leader Rating</h5>
+                    <p class="text-center small">Please rate your employees on the following aspects</p>
+                  </div>
+                  <form action="/team-leader-submit-rating" method="POST" class="row g-3 needs-validation" novalidate>
+                    <div class="mb-3">
+                      <label for="employeeUsername" class="form-label">Employee Username</label>
+                      <input type="text" name="employeeUsername" class="form-control" id="employeeUsername" placeholder="Enter employee username" required>
+                      <div class="invalid-feedback">Please enter an employee username!</div>
+                    </div>
+                                     
+                    
+                    
+                    <!-- Questions and rating fields -->
+                    <div class="col-12">
+                      <label for="question1" class="form-label">Question 1: Communication Skills</label>
+                      <select name="rating1" class="form-control" id="question1" required>
+                        <option value="" disabled selected>Select your rating</option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a rating!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="question2" class="form-label">Question 2: Technical Skills</label>
+                      <select name="rating2" class="form-control" id="question2" required>
+                        <option value="" disabled selected>Select your rating</option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a rating!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="question3" class="form-label">Question 3: Team Work</label>
+                      <select name="rating3" class="form-control" id="question3" required>
+                        <option value="" disabled selected>Select your rating</option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a rating!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="question4" class="form-label">Question 4: Leadership</label>
+                      <select name="rating4" class="form-control" id="question4" required>
+                        <option value="" disabled selected>Select your rating</option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a rating!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="question5" class="form-label">Question 5: Time Management</label>
+                      <select name="rating5" class="form-control" id="question5" required>
+                        <option value="" disabled selected>Select your rating</option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a rating!</div>
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Submit Rating</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Vendor JS Files -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="assets/vendor/quill/quill.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

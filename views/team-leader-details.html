@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Leader Details</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Optional: Bootstrap Icons (if used) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  
+  <!-- Your custom CSS -->
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <main>
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-10 d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex justify-content-center py-4">
+                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                  <img src="assets/img/logo.png" alt="">
+                  <span class="d-none d-lg-block ml-2">NiceAdmin</span>
+                </a>
+              </div>
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Team Leader Details</h5>
+                    <p class="text-center small">Fill in the details below</p>
+                  </div>
+                 
+                  <form action="/team-leader-details" method="POST" class="row g-3 needs-validation" novalidate>
+                    <div class="col-12">
+                      <label for="teamLeaderCode" class="form-label">Team Leader Code</label>
+                      <input type="text" name="teamLeaderCode" class="form-control" id="teamLeaderCode" required>
+                      <div class="invalid-feedback">Please, enter the team leader code!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="phoneNumber" class="form-label">Phone Number</label>
+                      <input type="tel" name="phoneNumber" class="form-control" id="phoneNumber" required>
+                      <div class="invalid-feedback">Please enter a valid phone number!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="userRoleId" class="form-label">User Role ID</label>
+                      <input type="text" name="userRoleId" class="form-control" id="userRoleId" required>
+                      <div class="invalid-feedback">Please enter the user role ID!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="deptId" class="form-label">Department ID</label>
+                      <input type="text" name="deptId" class="form-control" id="deptId" required>
+                      <div class="invalid-feedback">Please enter the department ID!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="designation" class="form-label">Designation</label>
+                      <input type="text" name="designation" class="form-control" id="designation" required>
+                      <div class="invalid-feedback">Please enter the designation!</div>
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Submit</button>
+                    </div>
+                  </form>
+                 
+                </div>
+              </div>
+              <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Bootstrap Bundle with Popper (Optional: For Bootstrap JS features) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Your custom scripts -->
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

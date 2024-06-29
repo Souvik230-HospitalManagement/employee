@@ -78,6 +78,18 @@
                     </div>
 
                     <div class="col-12">
+                      <label for="yourDesignation" class="form-label">Designation</label>
+                      <select name="designation" class="form-control" id="yourDesignation" required>
+                        <option value="" disabled selected>Select your designation</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Team Leader">Team Leader</option>
+                        <option value="HR">HR</option>
+                      </select>
+                      <div class="invalid-feedback">Please select your designation!</div>
+                    </div>
+                    
+
+                    <div class="col-12">
                       <label for="yourUsername" class="form-label">Username</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
