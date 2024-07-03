@@ -326,6 +326,103 @@ app.post('/team-leader-submit-rating', (req, res) => {
   });
 });
 
+
+
+
+
+
+
+
+
+
+app.get('/index', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+// app.get('/deperment-list', (req, res) => {
+//   console.log("deperment-list");
+//    res.sendFile(path.join(__dirname, 'views', 'deperments-list.html'));
+// });
+app.get('/add-deperment-form', (req, res) => {
+  console.log("deperment-form");
+   res.sendFile(path.join(__dirname, 'views', 'add-deperment-form.html'));
+  //res.redirect("/views/deperments-list.html");
+});
+app.post('/add-department', (req, res) => {
+  const { depertment_name, team_leader_name } = req.body;
+  
+  // Verify if the required fields are present
+  if (!depertment_name || !team_leader_name) {
+      return res.status(400).send('Bad Request: Missing required fields');
+  }
+
+  // Insert data into the database
+  const sql = 'INSERT INTO add_depertment (depertment_name, team_leader_name) VALUES (?, ?)';
+  db.query(sql, [depertment_name, team_leader_name], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).send('Server error');
+      }
+      res.status(200).send('Department added');
+  });
+});
+
+app.get('/departments', (req, res) => {
+  const sql = 'SELECT * FROM add_depertment';
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.render('deperments-list', { departments: results });
+      }
+  });
+});
+// Route to render edit form
+app.get('/edit/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = 'SELECT * FROM add_depertment WHERE id = ?';
+  db.query(sql, [id], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.render('edit-department', { department: result[0] });
+      }
+  });
+});
+
+// Route to handle edit operation
+app.post('/edit/:id', (req, res) => {
+  const id = req.params.id;
+  const { depertment_name, team_leader_name } = req.body;
+  
+  const sql = 'UPDATE add_depertment SET depertment_name = ?, team_leader_name = ? WHERE id = ?';
+  db.query(sql, [depertment_name, team_leader_name, id], (err, result) => {
+    console.log("edit deperment");  
+    if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.redirect('/departments'); // Redirect to departments list after update
+      }
+  });
+});
+
+// Route to handle delete operation
+app.post('/delete/:id', (req, res) => {
+  const id = req.params.id;
+  
+  const sql = 'DELETE FROM add_depertment WHERE id = ?';
+  console.log("delete deperment");
+  db.query(sql, [id], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.redirect('/departments'); // Redirect to departments list after delete
+      }
+  });
+});
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

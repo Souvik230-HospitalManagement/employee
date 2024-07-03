@@ -1,0 +1,26 @@
+<!-- edit-department.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Department</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Edit Department</h2>
+        <form action="/edit/<%= department.id %>" method="POST">
+            <div class="form-group">
+                <label for="depertment_name">Department Name</label>
+                <input type="text" class="form-control" id="depertment_name" name="depertment_name" value="<%= department.depertment_name %>" required>
+            </div>
+            <div class="form-group">
+                <label for="team_leader_name">Team Leader Name</label>
+                <input type="text" class="form-control" id="team_leader_name" name="team_leader_name" value="<%= department.team_leader_name %>" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</body>
+</html>
