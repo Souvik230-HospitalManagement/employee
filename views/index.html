@@ -59,7 +59,7 @@
       </form>
     </div><!-- End Search Bar -->
 
-    <nav class="header-nav ms-auto">
+    <nav class="header-nav ms-auto" >
       <ul class="d-flex align-items-center">
 
         <li class="nav-item d-block d-lg-none">
@@ -216,7 +216,7 @@
             <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
           </a><!-- End Profile Iamge Icon -->
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <!-- <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
               <h6>Kevin Anderson</h6>
               <span>Web Designer</span>
@@ -226,7 +226,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <a class="dropdown-item d-flex align-items-center" href="/users_profile">
                 <i class="bi bi-person"></i>
                 <span>My Profile</span>
               </a>
@@ -236,7 +236,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <a class="dropdown-item d-flex align-items-center" href="/users_profile">
                 <i class="bi bi-gear"></i>
                 <span>Account Settings</span>
               </a>
@@ -262,7 +262,55 @@
               </a>
             </li>
 
-          </ul><!-- End Profile Dropdown Items -->
+          </ul> -->
+          <!-- End Profile Dropdown Items -->
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <!-- <li class="dropdown-header">
+              <h6>Kevin Anderson</h6>
+              <span>Web Designer</span>
+            </li> -->
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+          
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/users_profile">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+          
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/profile/settings">
+                <i class="bi bi-gear"></i>
+                <span>Account Settings</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+          
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/faq">
+                <i class="bi bi-question-circle"></i>
+                <span>Need Help?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+          
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+          </ul>
+          
         </li><!-- End Profile Nav -->
 
       </ul>
@@ -282,11 +330,13 @@
         </a>
       </li><!-- End Dashboard Nav -->
 
+
+
+      <!-- Departments -->
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Deperments</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        
+        </a>       
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/departments">
@@ -298,11 +348,31 @@
             <a href="/add-deperment-form">
               <i class="bi bi-circle"></i><span>Add-Deperment</span>
             </a>
-          </li>
-         
-          
+          </li>                  
         </ul>
       </li><!-- End Components Nav -->
+
+
+
+      <!-- Employees -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Employess</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>       
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/employees">
+              <i class="bi bi-circle"></i><span>Employee-List</span>
+              
+            </a>
+          </li>
+          <li>
+            <a href="/add-employee">
+              <i class="bi bi-circle"></i><span>Add-Employee</span>
+            </a>
+          </li>                  
+        </ul>
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
@@ -399,7 +469,7 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
+        <a class="nav-link collapsed" href="/users_profile">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
@@ -538,7 +608,8 @@
                 </div>
 
               </div>
-            </div><!-- End Revenue Card -->
+            </div>
+            <!-- End Revenue Card -->
 
             <!-- Customers Card -->
             <div class="col-xxl-4 col-xl-12">
@@ -958,7 +1029,8 @@
               </script>
 
             </div>
-          </div><!-- End Budget Report -->
+          </div>
+          <!-- End Budget Report -->
 
           <!-- Website Traffic -->
           <div class="card">
@@ -1036,7 +1108,8 @@
               </script>
 
             </div>
-          </div><!-- End Website Traffic -->
+          </div>
+          <!-- End Website Traffic -->
 
           <!-- News & Updates Traffic -->
           <div class="card">
@@ -1090,7 +1163,8 @@
               </div><!-- End sidebar recent posts-->
 
             </div>
-          </div><!-- End News & Updates -->
+          </div>
+          <!-- End News & Updates -->
 
         </div><!-- End Right side columns -->
 

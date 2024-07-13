@@ -4,6 +4,10 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const app = express();
+const cors = require('cors');
+const multer = require('multer');
+const fs = require('fs');
+const csv = require('csv-parser');
 const PORT = process.env.PORT || 3000;
 
 // Set Handlebars as the view engine
@@ -78,6 +82,7 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   const SELECT_USER_QUERY = 'SELECT * FROM register WHERE username = ? AND password = ?';
@@ -90,23 +95,50 @@ app.post('/login', (req, res) => {
     }
 
     if (results.length > 0) {
+      const user = results[0];
+      req.session.userId = user.id; // Store user ID in session
       req.session.username = username; // Store username in session
-      const userDesignation = results[0].designation; // Assuming 'designation' is the column name in your database
-      console.log(`Login successful. User Designation: ${userDesignation}`);
 
-      if (userDesignation === 'Employee') {
-        res.redirect('/emp-details'); // Redirect to employee details page after successful login
-      } else if (userDesignation === 'Team Leader') {
-        res.redirect('/team-leader-details'); // Redirect to team leader welcome page
-      } else {
-        res.status(403).send('Unauthorized access');
-      }
+      // Check if user details already exist in emp_details1
+      const CHECK_EMP_DETAILS_QUERY = 'SELECT * FROM emp_details1 WHERE id = ?';
+      db.query(CHECK_EMP_DETAILS_QUERY, [user.id], (err, empResults) => {
+        if (err) {
+          console.error('Error checking emp_details1:', err);
+          res.status(500).send('Error logging in');
+          return;
+        }
+
+        if (empResults.length === 0) {
+          // Insert name and email from register table into emp_details1
+          const INSERT_EMP_DETAILS_QUERY = 'INSERT INTO emp_details1 (id, full_name, email) VALUES (?, ?, ?)';
+          db.query(INSERT_EMP_DETAILS_QUERY, [user.id, user.name, user.email], (err, insertResult) => {
+            if (err) {
+              console.error('Error inserting into emp_details1:', err);
+              res.status(500).send('Error logging in');
+              return;
+            }
+            console.log('User details inserted into emp_details1');
+          });
+        }
+
+        const userDesignation = user.designation; // Assuming 'designation' is the column name in your database
+        console.log(`Login successful. User Designation: ${userDesignation}`);
+
+        if (userDesignation === 'Employee') {
+          res.redirect('/index'); // Redirect to employee details page after successful login
+        } else if (userDesignation === 'Team Leader') {
+          res.redirect('/index'); // Redirect to team leader welcome page
+        } else {
+          res.status(403).send('Unauthorized access');
+        }
+      });
     } else {
       console.log('Invalid username or password');
       res.status(401).send('Invalid username or password');
     }
   });
 });
+
 
 // Route to serve the employee details page
 app.get('/emp-details', (req, res) => {
@@ -119,8 +151,8 @@ app.post('/emp-details', (req, res) => {
   const { employeeCode, phoneNumber, userRoleId, managerId, designation, deptId } = req.body;
 
   const SELECT_QUERY = 'SELECT * FROM emp_details WHERE username = ?';
-  const INSERT_QUERY = 'INSERT INTO emp_details (username, employee_code, phone_number, user_role_id, manager_id, deperment, dept_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  const UPDATE_QUERY = 'UPDATE emp_details SET employee_code = ?, phone_number = ?, user_role_id = ?, manager_id = ?, deperment = ?, dept_id = ? WHERE username = ?';
+  const INSERT_QUERY = 'INSERT INTO emp_details (username, employee_code, work_location, user_role_id, manager_id, deperment, dept_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  const UPDATE_QUERY = 'UPDATE emp_details SET employee_code = ?, work_location = ?, user_role_id = ?, manager_id = ?, deperment = ?, dept_id = ? WHERE username = ?';
 
   db.query(SELECT_QUERY, [username], (err, results) => {
     if (err) {
@@ -242,8 +274,6 @@ app.post('/team-leader-details', (req, res) => {
 });
 
 // Route to serve the team leader rating page
-// Route to serve the team leader rating page
-// Route to serve the team leader rating page
 app.get('/team-leader-rating', (req, res) => {
   const teamLeaderCode = req.session.teamLeaderCode;
 
@@ -264,10 +294,6 @@ app.get('/team-leader-rating', (req, res) => {
     res.render('team-leader-rating', { employees: results }); // Assuming 'results' contains an array of employee usernames
   });
 });
-
-
-
-
 
 // Route to handle submission of ratings
 app.post('/team-leader-submit-rating', (req, res) => {
@@ -326,38 +352,26 @@ app.post('/team-leader-submit-rating', (req, res) => {
   });
 });
 
-
-
-
-
-
-
-
-
-
 app.get('/index', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
-// app.get('/deperment-list', (req, res) => {
-//   console.log("deperment-list");
-//    res.sendFile(path.join(__dirname, 'views', 'deperments-list.html'));
-// });
+
 app.get('/add-deperment-form', (req, res) => {
   console.log("deperment-form");
    res.sendFile(path.join(__dirname, 'views', 'add-deperment-form.html'));
   //res.redirect("/views/deperments-list.html");
 });
 app.post('/add-department', (req, res) => {
-  const { depertment_name, team_leader_name } = req.body;
-  
+  const { dept_id, depertment_name, team_leader_name } = req.body;
+
   // Verify if the required fields are present
-  if (!depertment_name || !team_leader_name) {
+  if (!dept_id || !depertment_name || !team_leader_name) {
       return res.status(400).send('Bad Request: Missing required fields');
   }
 
   // Insert data into the database
-  const sql = 'INSERT INTO add_depertment (depertment_name, team_leader_name) VALUES (?, ?)';
-  db.query(sql, [depertment_name, team_leader_name], (err, result) => {
+  const sql = 'INSERT INTO add_depertment (dept_id, depertment_name, team_leader_name) VALUES (?, ?, ?)';
+  db.query(sql, [dept_id, depertment_name, team_leader_name], (err, result) => {
       if (err) {
           console.error(err);
           return res.status(500).send('Server error');
@@ -365,6 +379,7 @@ app.post('/add-department', (req, res) => {
       res.status(200).send('Department added');
   });
 });
+
 
 app.get('/departments', (req, res) => {
   const sql = 'SELECT * FROM add_depertment';
@@ -377,11 +392,12 @@ app.get('/departments', (req, res) => {
       }
   });
 });
+
 // Route to render edit form
-app.get('/edit/:id', (req, res) => {
-  const id = req.params.id;
-  const sql = 'SELECT * FROM add_depertment WHERE id = ?';
-  db.query(sql, [id], (err, result) => {
+app.get('/edit/:dept_id', (req, res) => {
+  const dept_id = req.params.dept_id;
+  const sql = 'SELECT * FROM add_depertment WHERE dept_id = ?';
+  db.query(sql, [dept_id], (err, result) => {
       if (err) {
           console.error(err);
           res.status(500).send('Server error');
@@ -392,13 +408,13 @@ app.get('/edit/:id', (req, res) => {
 });
 
 // Route to handle edit operation
-app.post('/edit/:id', (req, res) => {
-  const id = req.params.id;
+app.post('/edit/:dept_id', (req, res) => {
+  const dept_id = req.params.dept_id;
   const { depertment_name, team_leader_name } = req.body;
   
-  const sql = 'UPDATE add_depertment SET depertment_name = ?, team_leader_name = ? WHERE id = ?';
-  db.query(sql, [depertment_name, team_leader_name, id], (err, result) => {
-    console.log("edit deperment");  
+  const sql = 'UPDATE add_depertment SET depertment_name = ?, team_leader_name = ? WHERE dept_id = ?';
+  db.query(sql, [depertment_name, team_leader_name, dept_id], (err, result) => {
+    console.log("edit department");
     if (err) {
           console.error(err);
           res.status(500).send('Server error');
@@ -409,12 +425,12 @@ app.post('/edit/:id', (req, res) => {
 });
 
 // Route to handle delete operation
-app.post('/delete/:id', (req, res) => {
-  const id = req.params.id;
+app.post('/delete/:dept_id', (req, res) => {
+  const dept_id = req.params.dept_id;
   
-  const sql = 'DELETE FROM add_depertment WHERE id = ?';
-  console.log("delete deperment");
-  db.query(sql, [id], (err, result) => {
+  const sql = 'DELETE FROM add_depertment WHERE dept_id = ?';
+  console.log("delete department");
+  db.query(sql, [dept_id], (err, result) => {
       if (err) {
           console.error(err);
           res.status(500).send('Server error');
@@ -423,12 +439,336 @@ app.post('/delete/:id', (req, res) => {
       }
   });
 });
+
+
+// Route to render the form to add an employee
+app.get('/add-employee', (req, res) => {
+  console.log("employee-form");
+  res.sendFile(path.join(__dirname, 'views', 'add-employee-form.html'));
+});
+
+// Route to handle adding a new employee
+app.post('/add-employee', (req, res) => {
+  const { emp_id, emp_name, deperment_name, role } = req.body;
+  // Verify if the required fields are present
+  if (!emp_id || !emp_name || !deperment_name || !role) {
+      return res.status(400).send('Bad Request: Missing required fields');
+  }
+  // Insert data into the database
+  const sql = 'INSERT INTO add_employee (emp_id, emp_name, deperment_name, role) VALUES (?, ?, ?, ?)';
+  db.query(sql, [emp_id, emp_name, deperment_name, role], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).send('Server error');
+      }
+      res.status(200).send('Employee added');
+  });
+});
+
+// Route to display the list of employees
+app.get('/employees', (req, res) => {
+  const sql = 'SELECT * FROM add_employee';
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.render('employee-list', { employees: results });
+      }
+  });
+});
+
+// Route to render edit form
+app.get('/edit-emp/:emp_id', (req, res) => {
+  const emp_id = req.params.emp_id;
+  const sql = 'SELECT * FROM add_employee WHERE emp_id = ?';
+  db.query(sql, [emp_id], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.render('edit-employee', { employee: result[0] });
+      }
+  });
+});
+
+// Route to handle edit operation
+
+app.post('/edit-emp/:emp_id', (req, res) => {
+  const emp_id = req.params.emp_id;
+  const { deperment_name, emp_name, role } = req.body;
+
+  const sql = 'UPDATE add_employee SET deperment_name = ?, role = ?, emp_name = ? WHERE emp_id = ?';
+  db.query(sql, [deperment_name, role, emp_name, emp_id], (err, result) => {
+      console.log("edit employee");
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.redirect('/employees'); // Redirect to employees list after update
+      }
+  });
+});
+
+
+// Route to handle delete operation
+app.post('/delete-emp/:emp_id', (req, res) => {
+  const emp_id = req.params.emp_id;
+
+  const sql = 'DELETE FROM add_employee WHERE emp_id = ?';
+  console.log("delete employee");
+  db.query(sql, [emp_id], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Server error');
+      } else {
+          res.redirect('/employees'); // Redirect to employees list after delete
+      }
+  });
+});
+
+app.get('/emp_details1', (req, res) => {
+  console.log("employee-profile page");
+  res.sendFile(path.join(__dirname, 'views', 'emp_details1.html'));
+});
+
+// Endpoint to handle form submission
+app.post('/emp_details1', (req, res) => {
+  const {
+    fullName,
+    company,
+    job,
+    country,
+    address,
+    phone,
+    email,
+    twitter,
+    facebook,
+    linkedin
+  } = req.body;
+
+  const sql = 'INSERT INTO emp_details1 (full_name, company, job, country, address, phone, email, twitter_id, facebook_id, linkedin_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [fullName, company, job, country, address, phone, email, twitter, facebook, linkedin];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data into database:', err);
+      res.status(500).send('Server error');
+      return;
+    }
+    res.status(200).send({ message: 'Form submitted successfully', id: result.insertId });
+  });
+});
+
+// Middleware
+app.set('view engine', 'ejs'); // Set EJS as the template engine
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/users_profile', (req, res) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const query = `
+    SELECT 
+      r.name AS full_name, r.email, ed.* 
+    FROM 
+      register r
+    LEFT JOIN 
+      emp_details1 ed 
+    ON 
+      r.email = ed.email 
+    WHERE 
+      r.id = ?
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching user details:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    if (results.length > 0) {
+      const user = results[0];
+      res.render('users-profile', {
+        fullName: user.full_name,
+        company: user.company || '',
+        job: user.job || '',
+        country: user.country || '',
+        address: user.address || '',
+        phone: user.phone || '',
+        email: user.email,
+        twitter: user.twitter || '',
+        facebook: user.facebook || '',
+        linkedin: user.linkedin || '',
+        about: user.about || '',
+        emailNotifications: {
+          changesMade: user.changesMade || false,
+          newProducts: user.newProducts || false,
+          proOffers: user.proOffers || false,
+          securityAlerts: user.securityAlerts || false,
+        }
+      });
+    } else {
+      res.status(404).send('User not found');
+    }
+  });
+});
+
+app.post('/update-profile', (req, res) => {
+  const {
+    fullName,
+    company,
+    job,
+    country,
+    address,
+    phone,
+    email,
+    twitter,
+    facebook,
+    linkedin
+  } = req.body;
+
+  const sql = `
+    UPDATE 
+      emp_details1 
+    SET 
+      full_name = ?, 
+      company = ?, 
+      job = ?, 
+      country = ?, 
+      address = ?, 
+      phone = ?, 
+      twitter_id = ?, 
+      facebook_id = ?, 
+      linkedin_id = ? 
+    WHERE 
+      email = ?
+  `;
+  const values = [fullName, company, job, country, address, phone, twitter, facebook, linkedin, email];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error updating data in database:', err);
+      res.status(500).send('Server error');
+      return;
+    }
+    res.status(200).send({ message: 'Profile updated successfully' });
+  });
+});
+
+// View employee details
+app.get('/view-emp/:emp_id', (req, res) => {
+  const emp_id = req.params.emp_id;
+ console.log("if Table: add_employee attribute emp_id Primary match with  Table: emp_details attribute employee_code then Table: emp_details details need to show by click on 'view' button ")
+  const sql = `
+    SELECT ae.emp_id, ae.emp_name, ae.deperment_name, ae.role, 
+           ed.id, ed.work_location, ed.user_role_id, ed.manager_id, ed.deperment, ed.dept_id, ed.username
+    FROM add_employee ae
+    LEFT JOIN emp_details ed ON ae.emp_id = ed.employee_code
+    WHERE ae.emp_id = ?
+  `;
+  
+  db.query(sql, [emp_id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Server error');
+    }
+    if (result.length === 0) {
+      return res.status(404).send('Employee details not found');
+    }
+    res.render('view-emp', { employee: result[0] }); // Render a view-emp.ejs page with employee details
+  });
+});
+
+//upload add-employee-form
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+app.post('/upload-csv', upload.single('csvFile'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  const fileType = path.extname(req.file.originalname).toLowerCase();
+  const newFilename = path.join(__dirname, 'uploads', req.file.filename);
+
+  if (fileType === '.csv') {
+    const results = [];
+    fs.createReadStream(newFilename)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', () => {
+        results.forEach(row => {
+          const { emp_id, emp_name, deperment_name, role } = row;
+          const sql = 'INSERT INTO add_employee (emp_id, emp_name, deperment_name, role) VALUES (?, ?, ?, ?)';
+          db.query(sql, [emp_id, emp_name, deperment_name, role], (err, result) => {
+            if (err) {
+              console.error('Error inserting data into database:', err);
+            }
+            console.log("file uploderd");
+          });
+        });
+        fs.unlinkSync(newFilename);
+        res.status(200).send('CSV file uploaded and data inserted successfully.');
+      });
+  } else if (fileType === '.txt') {
+    fs.readFile(newFilename, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        res.status(500).send('Server error');
+        return;
+      }
+
+      const lines = data.split('\n');
+      const header = lines[0].split(',').map(item => item.trim());
+
+      if (header.length !== 4 || header[0] !== 'emp_id' || header[1] !== 'emp_name' || header[2] !== 'deperment_name' || header[3] !== 'role') {
+        fs.unlinkSync(newFilename);
+        return res.status(400).send('Invalid file format. Ensure the header contains: emp_id, emp_name, deperment_name, role');
+      }
+
+      const queries = lines.slice(1).map(line => {
+        const [emp_id, emp_name, deperment_name, role] = line.split(',').map(item => item.trim());
+
+        if (!emp_id || !emp_name || !deperment_name || !role) {
+          return null;
+        }
+
+        const sql = 'INSERT INTO add_employee (emp_id, emp_name, deperment_name, role) VALUES (?, ?, ?, ?)';
+        return db.query(sql, [emp_id, emp_name, deperment_name, role], (err, result) => {
+          if (err) {
+            console.error('Error inserting data into database:', err);
+          }
+          console.log("file uploderd");
+        });
+      }).filter(query => query !== null);
+
+      Promise.all(queries).then(() => {
+        fs.unlinkSync(newFilename);
+        res.status(200).send('.txt file uploaded and data inserted successfully.');
+      }).catch(err => {
+        console.error('Error executing queries:', err);
+        res.status(500).send('Server error');
+      });
+    });
+  } else {
+    fs.unlinkSync(newFilename);
+    res.status(400).send('Unsupported file type.');
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
-
-

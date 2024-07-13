@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Employee</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>View Employee</h1>
+        <p><strong>Employee ID:</strong> <%= employee.emp_id %></p>
+        <p><strong>Employee Name:</strong> <%= employee.emp_name %></p>
+        <p><strong>Department Name:</strong> <%= employee.deperment_name %></p>
+        <p><strong>Role:</strong> <%= employee.role %></p>
+        <% if (employee.id) { %>
+            <h2>Additional Details</h2>
+            <p><strong>Work Location:</strong> <%= employee.work_location %></p>
+            <p><strong>User Role ID:</strong> <%= employee.user_role_id %></p>
+            <p><strong>Manager ID:</strong> <%= employee.manager_id %></p>
+            <p><strong>Department:</strong> <%= employee.deperment %></p>
+            <p><strong>Department ID:</strong> <%= employee.dept_id %></p>
+            <p><strong>Username:</strong> <%= employee.username %></p>
+        <% } else { %>
+            <p>No additional details available.</p>
+        <% } %>
+        <a href="/employees" class="btn btn-secondary">Back to Employees</a>
+    </div>
+</body>
+</html>

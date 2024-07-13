@@ -1,5 +1,4 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -507,72 +506,53 @@
 
   </aside><!-- End Sidebar-->
 
-  <main>
-    <div class="container">
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8 col-sm-10 d-flex flex-column align-items-center justify-content-center">
-              <div class="d-flex justify-content-center py-4">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                  <img src="assets/img/logo.png" alt="">
-                  <span class="d-none d-lg-block ml-2">NiceAdmin</span>
-                </a>
-              </div>
-              <div class="card mb-3">
-                <div class="card-body">
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Employee Details</h5>
-                    <p class="text-center small">Fill in the details below</p>
-                  </div>
-                 
-                  <form action="/emp-details" method="POST" class="row g-3 needs-validation" novalidate>
-                    <div class="col-12">
-                      <label for="employeeCode" class="form-label">Employee Code</label>
-                      <input type="text" name="employeeCode" class="form-control" id="employeeCode" required>
-                      <div class="invalid-feedback">Please, enter the employee code!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="phoneNumber" class="form-label">Work Location</label>
-                      <input type="tel" name="phoneNumber" class="form-control" id="phoneNumber" required>
-                      <div class="invalid-feedback">Please enter a valid work_location!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="userRoleId" class="form-label">User Role ID</label>
-                      <input type="text" name="userRoleId" class="form-control" id="userRoleId" required>
-                      <div class="invalid-feedback">Please enter the user role ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="managerId" class="form-label">Manager ID</label>
-                      <input type="text" name="managerId" class="form-control" id="managerId" required>
-                      <div class="invalid-feedback">Please enter the manager ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="designation" class="form-label">Deperment</label>
-                      <input type="text" name="designation" class="form-control" id="designation" required>
-                      <div class="invalid-feedback">Please enter the designation!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="deptId" class="form-label">Department ID</label>
-                      <input type="text" name="deptId" class="form-control" id="deptId" required>
-                      <div class="invalid-feedback">Please enter the department ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Submit</button>
-                    </div>
-                  </form>
-                 
-                </div>
-              </div>
-              <div class="credits">
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-              </div>
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Form Layouts</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <div class="card">
+        <div class="card-body">          
+          <form action="/add-employee" method="POST">
+            <div class="form-group">
+              <label for="emp_id">Employee ID</label>
+              <input type="text" class="form-control" id="emp_id" name="emp_id" required>
             </div>
-          </div>
+            <div class="form-group">
+              <label for="emp_name">Employee Name</label>
+              <input type="text" class="form-control" id="emp_name" name="emp_name" required>
+            </div>
+            <div class="form-group">
+              <label for="deperment_name">Department Name</label>
+              <input type="text" class="form-control" id="deperment_name" name="deperment_name" required>
+            </div>
+            <div class="form-group">
+              <label for="role">Role</label>
+              <input type="text" class="form-control" id="role" name="role" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+          
+          <!-- Form for uploading CSV file -->
+          <form action="/upload-csv" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="csvFile">Upload File</label>
+                <input type="file" class="form-control" id="csvFile" name="csvFile" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>          
         </div>
-      </section>
-    </div>
-  </main>
+      </div>
+
+  </main><!-- End #main -->
+
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">

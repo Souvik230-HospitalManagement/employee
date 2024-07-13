@@ -1,0 +1,6 @@
+emp_id,emp_name,deperment_name,role
+101,John Doe,Sales,Manager
+102,Jane Smith,Marketing,Executive
+103,Michael Johnson,IT,Developer
+104,Emily Davis,HR,Recruiter
+105,William Brown,Finance,Analyst

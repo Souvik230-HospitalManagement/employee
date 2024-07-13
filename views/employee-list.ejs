@@ -1,12 +1,11 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Forms / Layouts - NiceAdmin Bootstrap Template</title>
+  <title>Tables / General - NiceAdmin Bootstrap Template</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -361,17 +360,17 @@
       </li><!-- End Components Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Forms</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="forms-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="forms-elements.html">
               <i class="bi bi-circle"></i><span>Form Elements</span>
             </a>
           </li>
           <li>
-            <a href="forms-layouts.html" class="active">
+            <a href="forms-layouts.html">
               <i class="bi bi-circle"></i><span>Form Layouts</span>
             </a>
           </li>
@@ -389,12 +388,12 @@
       </li><!-- End Forms Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link " data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="tables-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="tables-general.html">
+            <a href="tables-general.html" class="active">
               <i class="bi bi-circle"></i><span>General Tables</span>
             </a>
           </li>
@@ -507,72 +506,66 @@
 
   </aside><!-- End Sidebar-->
 
-  <main>
-    <div class="container">
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8 col-sm-10 d-flex flex-column align-items-center justify-content-center">
-              <div class="d-flex justify-content-center py-4">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                  <img src="assets/img/logo.png" alt="">
-                  <span class="d-none d-lg-block ml-2">NiceAdmin</span>
-                </a>
-              </div>
-              <div class="card mb-3">
-                <div class="card-body">
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Employee Details</h5>
-                    <p class="text-center small">Fill in the details below</p>
-                  </div>
-                 
-                  <form action="/emp-details" method="POST" class="row g-3 needs-validation" novalidate>
-                    <div class="col-12">
-                      <label for="employeeCode" class="form-label">Employee Code</label>
-                      <input type="text" name="employeeCode" class="form-control" id="employeeCode" required>
-                      <div class="invalid-feedback">Please, enter the employee code!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="phoneNumber" class="form-label">Work Location</label>
-                      <input type="tel" name="phoneNumber" class="form-control" id="phoneNumber" required>
-                      <div class="invalid-feedback">Please enter a valid work_location!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="userRoleId" class="form-label">User Role ID</label>
-                      <input type="text" name="userRoleId" class="form-control" id="userRoleId" required>
-                      <div class="invalid-feedback">Please enter the user role ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="managerId" class="form-label">Manager ID</label>
-                      <input type="text" name="managerId" class="form-control" id="managerId" required>
-                      <div class="invalid-feedback">Please enter the manager ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="designation" class="form-label">Deperment</label>
-                      <input type="text" name="designation" class="form-control" id="designation" required>
-                      <div class="invalid-feedback">Please enter the designation!</div>
-                    </div>
-                    <div class="col-12">
-                      <label for="deptId" class="form-label">Department ID</label>
-                      <input type="text" name="deptId" class="form-control" id="deptId" required>
-                      <div class="invalid-feedback">Please enter the department ID!</div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Submit</button>
-                    </div>
-                  </form>
-                 
-                </div>
-              </div>
-              <div class="credits">
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <!-- <li class="breadcrumb-item">Tables</li>
+          <li class="breadcrumb-item active">General</li> -->
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Table Variants</h5>
+        <p><a href="https://getbootstrap.com/docs/5.0/utilities/borders/#border-color" target="_blank"></a> </p>
+
+             
+                  <table class="table table-bordered border-primary">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Employee ID</th>
+                            <th scope="col">Employee Name</th>
+                            <th scope="col">Deperment Name</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% employees.forEach(function(employee, index) { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= employee.emp_id %></td>
+                                <td><%= employee.emp_name %></td>
+                                <td><%= employee.deperment_name %></td>
+                                <td><%= employee.role %></td>
+                                <td>
+                                    <a href="/view-emp/<%= employee.emp_id %>" class="btn btn-info btn-sm">View</a>
+                                    <a href="/edit-emp/<%= employee.emp_id %>" class="btn btn-primary btn-sm">Edit</a>
+                                    <form action="/delete-emp/<%= employee.emp_id %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>                                 
+              </tbody>
+              </table>
+              <!-- End Primary Color Bordered Table -->
+
+      </div>
     </div>
-  </main>
+
+  </div>
+
+  </main><!-- End #main -->
+
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">

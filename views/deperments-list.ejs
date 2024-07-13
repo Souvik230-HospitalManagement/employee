@@ -525,7 +525,7 @@
         <p><a href="https://getbootstrap.com/docs/5.0/utilities/borders/#border-color" target="_blank"></a> </p>
 
               <!-- Primary Color Bordered Table -->
-              <table class="table table-bordered border-primary">
+              <!-- <table class="table table-bordered border-primary">
                 <thead>
                   <tr>
                       <th scope="col">#</th>
@@ -547,7 +547,37 @@
                             </form>
                         </td>
                       </tr>
-                  <% }); %>
+                  <% }); %> -->
+                  <table class="table table-bordered border-primary">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Department ID</th>
+                        
+                        <th scope="col">Department Name</th>
+                        <th scope="col">Team Leader</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% departments.forEach(function(department, index) { %>
+                        <tr>
+                          <td><%= index + 1 %></td>
+                          <td><%= department.dept_id %></td>
+                          
+                          <td><%= department.depertment_name %></td>
+                          <td><%= department.team_leader_name %></td>
+                          <td>
+                            <a href="/edit/<%= department.dept_id %>" class="btn btn-primary btn-sm">Edit</a>
+                            <form action="/delete/<%= department.dept_id %>" method="POST" style="display: inline;">
+                              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                  
               </tbody>
               </table>
               <!-- End Primary Color Bordered Table -->
